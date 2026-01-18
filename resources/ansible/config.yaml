@@ -1,0 +1,11 @@
+SLACK_CHANNEL_NAME: "build-status"
+ENVIRONMENT: "prod"
+CODE_BASE_PATH: "env/prod"
+ACTION_MESSAGE: "Ansible deployment triggered"
+KEEP_APPROVAL_STAGE: true
+
+GIT_REPO_URL: "https://github.com/TANISHKA-SINGLA/jenkins-ansible-shared-lib.git"
+GIT_BRANCH: "main"
+
+ANSIBLE_PLAYBOOK: "site.yml"
+INVENTORY_FILE: "inventory/prod
