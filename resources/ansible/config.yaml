@@ -8,4 +8,4 @@ GIT_REPO_URL: "https://github.com/TANISHKA-SINGLA/jenkins-ansible-shared-lib.git
 GIT_BRANCH: "main"
 
 ANSIBLE_PLAYBOOK: "site.yml"
-INVENTORY_FILE: "inventory/prod
+INVENTORY_FILE: "inventory/prod"
