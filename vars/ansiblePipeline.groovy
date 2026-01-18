@@ -31,6 +31,7 @@ def call() {
             stage('Ansible Execution') {
                 steps {
                     sh """
+			cd consul-project
                     ansible-playbook \
                       -i ${config.INVENTORY_FILE} \
                       ${config.ANSIBLE_PLAYBOOK}
