@@ -1,6 +1,11 @@
 def call() {
 
-    def config = readYaml text: libraryResource('ansible/config.yaml')
+    def config
+    script {
+        config = readYaml(
+            text: libraryResource('ansible/config.yaml')
+        )
+    }
 
     pipeline {
         agent any
@@ -36,15 +41,15 @@ def call() {
 
         post {
             success {
-                notifySlack(
-                    config.SLACK_CHANNEL_NAME,
-                    "SUCCESS: ${config.ACTION_MESSAGE}"
+                slackSend(
+                    channel: config.SLACK_CHANNEL_NAME,
+                    message: "✅ ${config.ACTION_MESSAGE}"
                 )
             }
             failure {
-                notifySlack(
-                    config.SLACK_CHANNEL_NAME,
-                    "FAILED: ${config.ACTION_MESSAGE}"
+                slackSend(
+                    channel: config.SLACK_CHANNEL_NAME,
+                    message: "❌ ${config.ACTION_MESSAGE}"
                 )
             }
         }
