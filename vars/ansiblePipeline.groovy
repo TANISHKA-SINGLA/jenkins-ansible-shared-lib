@@ -1,30 +1,45 @@
-def call(Map overrideConfig = [:]) {
+def call(Map config = [:]) {
 
-    def config = [:]
+    pipeline {
+        agent any
 
-    script {
-        config = readYaml(
-            text: libraryResource('ansible/config.yaml')
-        )
-    }
+        environment {
+            SLACK_CHANNEL = config.get('SLACK_CHANNEL_NAME', '#jenkins-alert')
+            ENVIRONMENT   = config.get('ENVIRONMENT', 'prod')
+            PLAYBOOK      = config.get('playbook', 'playbook.yml')
+            INVENTORY     = config.get('inventory', 'inventory.ini')
+        }
 
-    // Allow Jenkinsfile to override config values
-    config << overrideConfig
+        stages {
 
-    stage('Ansible Execution') {
-        sh """
-        pwd
-        ls -la
-        ansible-playbook \
-          -i ${config.INVENTORY_FILE} \
-          ${config.ANSIBLE_PLAYBOOK}
-        """
-    }
+            stage('Checkout Source Code') {
+                steps {
+                    echo "Source code already checked out by Jenkinsfile"
+                }
+            }
 
-    if (config.SLACK_CHANNEL_NAME) {
-        slackSend(
-            channel: config.SLACK_CHANNEL_NAME,
-            message: "✅ ${config.ACTION_MESSAGE}"
-        )
+            stage('User Approval') {
+                steps {
+                    input message: "Deploy to ${ENVIRONMENT} environment?"
+                }
+            }
+
+            stage('Ansible Playbook Execution') {
+                steps {
+                    sh """
+                        ansible-playbook -i ${INVENTORY} ${PLAYBOOK}
+                    """
+                }
+            }
+        }
+
+        post {
+            success {
+                echo "Deployment successful for ${ENVIRONMENT}"
+            }
+            failure {
+                echo "Deployment failed for ${ENVIRONMENT}"
+            }
+        }
     }
 }
